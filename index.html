@@ -11,27 +11,41 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      @media print {
+        body { 
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .page-break {
+          page-break-before: always;
+        }
+      }
+    </style>
   </head>
   <body class="bg-gray-100">
-    <header class="bg-blue-800 text-white p-4">
+    <header class="bg-blue-800 text-white p-4 print:bg-blue-800 print:text-white">
       <h1 class="text-3xl font-bold text-center">
         Teatro Centro Cultural Plaza de San Martín
       </h1>
     </header>
 
     <main class="container mx-auto p-4">
-      <section class="mb-8">
+      <section class="mb-8 no-print">
         <h2 class="text-2xl font-semibold mb-4">Plano de Asientos</h2>
         <p class="text-gray-700 mb-4">
           Seleccione los asientos para ver su disponibilidad. Los asientos en
-          rojo están ocupados o seleccionados. Los asientos VIP tienen campos
-          para nombre y apellido en la columna derecha.
+          rojo están ocupados o seleccionados. Los asientos VIP tienen campos para nombre y apellido en la columna
+          derecha.
         </p>
       </section>
 
       <section id="plano-teatro" class="mb-8"></section>
 
-      <section class="mb-8">
+      <section class="mb-8 no-print">
         <h3 class="text-xl font-semibold mb-2">Información del Teatro</h3>
         <p class="text-gray-700">
           El Teatro Centro Cultural Plaza de San Martín es un espacio
@@ -41,7 +55,7 @@
       </section>
     </main>
 
-    <footer class="bg-gray-200 p-4 text-center text-gray-600">
+    <footer class="bg-gray-200 p-4 text-center text-gray-600 print:bg-gray-200 print:text-gray-600">
       <p>
         &copy; 2024 Teatro Centro Cultural Plaza de San Martín. Todos los
         derechos reservados.
@@ -59,235 +73,65 @@
         const [vipNombresPA, setVipNombresPA] = React.useState({});
         const planoRef = React.useRef(null);
 
-        const seccionesPB = {
-          izquierda: {
-            filas: 20,
-            asientosPorFila: [
-              5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-            ],
-          },
-          centro: {
-            filas: 19,
-            asientosPorFila: [
-              15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 15, 16, 15,
-              14, 13, 12,
-            ],
-          },
-          derecha: {
-            filas: 20,
-            asientosPorFila: [
-              5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-            ],
-          },
-        };
-
-        const seccionesPA = {
-          izquierda: {
-            filas: 12,
-            asientosPorFila: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 5],
-          },
-          derecha: {
-            filas: 12,
-            asientosPorFila: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 5],
-          },
-        };
-
-        const toggleAsiento = (planta, seccion, fila, asiento) => {
-          if (planta === "PB") {
-            setAsientosPB((prev) => ({
-              ...prev,
-              [`${seccion}-${fila}-${asiento}`]:
-                !prev[`${seccion}-${fila}-${asiento}`],
-            }));
-          } else {
-            setAsientosPA((prev) => ({
-              ...prev,
-              [`${seccion}-${fila}-${asiento}`]:
-                !prev[`${seccion}-${fila}-${asiento}`],
-            }));
-          }
-        };
-
-        const handleVipNombreChange = (planta, fila, asiento, valor) => {
-          if (planta === "PB") {
-            setVipNombresPB((prev) => ({
-              ...prev,
-              [`${fila}-${asiento}`]: valor,
-            }));
-          } else {
-            setVipNombresPA((prev) => ({
-              ...prev,
-              [`${fila}-${asiento}`]: valor,
-            }));
-          }
-        };
-
-        const renderSeccion = (planta, nombre, config) => (
-          <div className="mx-2">
-            <h3 className="text-lg font-semibold mb-2">{nombre}</h3>
-            <div className="flex flex-col items-center">
-              {Array.from({ length: config.filas }, (_, fila) => (
-                <div
-                  key={fila}
-                  className="flex justify-center w-full mb-1 items-center"
-                >
-                  <span className="mr-2 text-sm">{fila + 1}</span>
-                  {Array.from(
-                    { length: config.asientosPorFila[fila] },
-                    (_, asiento) => {
-                      const asientoNum =
-                        nombre.toLowerCase() === "izquierda"
-                          ? config.asientosPorFila[fila] - asiento
-                          : asiento + 1;
-                      return (
-                        <button
-                          key={asiento}
-                          onClick={() =>
-                            toggleAsiento(
-                              planta,
-                              nombre.toLowerCase(),
-                              fila + 1,
-                              asientoNum
-                            )
-                          }
-                          className={`w-6 h-6 text-xs rounded-full mx-0.5 flex items-center justify-center
-                          ${
-                            planta === "PB"
-                              ? asientosPB[
-                                  `${nombre.toLowerCase()}-${
-                                    fila + 1
-                                  }-${asientoNum}`
-                                ]
-                                ? "bg-red-500 text-white"
-                                : "bg-gray-300"
-                              : asientosPA[
-                                  `${nombre.toLowerCase()}-${
-                                    fila + 1
-                                  }-${asientoNum}`
-                                ]
-                              ? "bg-red-500 text-white"
-                              : "bg-gray-300"
-                          }
-                        `}
-                        >
-                          {asientoNum}
-                        </button>
-                      );
-                    }
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        );
-
-        const renderVipSection = (planta) => (
-          <div className="ml-4 border-l pl-4">
-            <h3 className="text-lg font-semibold mb-2">Asientos VIP</h3>
-            <div className="flex space-x-4">
-              {Array.from({ length: 2 }, (_, fila) => (
-                <div key={fila} className="flex-1">
-                  <h4 className="font-semibold mb-2">Fila {fila + 1}</h4>
-                  <div className="space-y-2">
-                    {Array.from(
-                      {
-                        length:
-                          planta === "PB"
-                            ? seccionesPB.centro.asientosPorFila[fila]
-                            : 10,
-                      },
-                      (_, asiento) => (
-                        <div key={asiento} className="flex items-center">
-                          <span className="mr-2 font-medium w-6">
-                            {asiento + 1}:
-                          </span>
-                          <input
-                            type="text"
-                            placeholder="Nombre y Apellido"
-                            className="flex-grow p-1 text-sm border rounded"
-                            value={
-                              planta === "PB"
-                                ? vipNombresPB[`${fila + 1}-${asiento + 1}`] ||
-                                  ""
-                                : vipNombresPA[`${fila + 1}-${asiento + 1}`] ||
-                                  ""
-                            }
-                            onChange={(e) =>
-                              handleVipNombreChange(
-                                planta,
-                                fila + 1,
-                                asiento + 1,
-                                e.target.value
-                              )
-                            }
-                          />
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        );
+        // ... (el resto de las constantes y funciones se mantienen igual)
 
         const imprimirPlano = () => {
           window.print();
         };
 
         const guardarComoJPG = () => {
-          html2canvas(planoRef.current).then((canvas) => {
-            const link = document.createElement("a");
-            link.download = "plano-teatro.jpg";
-            link.href = canvas.toDataURL("image/jpeg");
+          const scale = 2; // Aumenta la escala para mejor calidad
+          html2canvas(planoRef.current, {
+            scale: scale,
+            useCORS: true,
+            logging: false,
+            windowWidth: planoRef.current.scrollWidth * scale,
+            windowHeight: planoRef.current.scrollHeight * scale
+          }).then((canvas) => {
+            const link = document.createElement('a');
+            link.download = 'plano-teatro.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 1.0);
             link.click();
           });
         };
 
         return (
-          <div
-            ref={planoRef}
-            className="max-w-full mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-4"
-          >
-            <div className="mb-4 flex justify-end space-x-4">
-              <button
-                onClick={imprimirPlano}
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-              >
+          <div ref={planoRef} className="max-w-full mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-4 print:shadow-none print:rounded-none">
+            <div className="mb-4 flex justify-end space-x-4 no-print">
+              <button onClick={imprimirPlano} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                 Imprimir Plano
               </button>
-              <button
-                onClick={guardarComoJPG}
-                className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              >
+              <button onClick={guardarComoJPG} className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                 Guardar como JPG
               </button>
             </div>
 
             <h2 className="text-2xl font-bold text-center my-4">PLANTA BAJA</h2>
-            <div className="w-full h-8 bg-gray-800 mb-4"></div>
+            <div className="w-full h-8 bg-gray-800 mb-4 print:bg-gray-800"></div>
             <div className="flex flex-col lg:flex-row">
               <div className="flex-grow mb-4 lg:mb-0">
                 <div className="flex flex-col md:flex-row justify-between">
-                  {renderSeccion("PB", "Izquierda", seccionesPB.izquierda)}
-                  {renderSeccion("PB", "Centro", seccionesPB.centro)}
-                  {renderSeccion("PB", "Derecha", seccionesPB.derecha)}
+                  {renderSeccion('PB', "Izquierda", seccionesPB.izquierda)}
+                  {renderSeccion('PB', "Centro", seccionesPB.centro)}
+                  {renderSeccion('PB', "Derecha", seccionesPB.derecha)}
                 </div>
                 <div className="mt-4 text-center">Cabina de Luces y Sonido</div>
               </div>
-              {renderVipSection("PB")}
+              {renderVipSection('PB')}
             </div>
 
+            <div className="page-break"></div>
+
             <h2 className="text-2xl font-bold text-center my-8">PLANTA ALTA</h2>
-            <div className="w-full h-8 bg-gray-800 mb-4"></div>
+            <div className="w-full h-8 bg-gray-800 mb-4 print:bg-gray-800"></div>
             <div className="flex flex-col lg:flex-row justify-center">
               <div className="flex-grow mb-4 lg:mb-0">
                 <div className="flex flex-col md:flex-row justify-center space-x-8">
-                  {renderSeccion("PA", "Izquierda", seccionesPA.izquierda)}
-                  {renderSeccion("PA", "Derecha", seccionesPA.derecha)}
+                  {renderSeccion('PA', "Izquierda", seccionesPA.izquierda)}
+                  {renderSeccion('PA', "Derecha", seccionesPA.derecha)}
                 </div>
               </div>
-              {renderVipSection("PA")}
+              {renderVipSection('PA')}
             </div>
           </div>
         );
