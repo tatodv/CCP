@@ -179,23 +179,13 @@
           window.print();
         };
 
-        const guardarComoImagen = () => {
-          const content = planoRef.current;
-          
-          // Asegurar que todo el contenido sea visible
-          content.style.overflow = 'visible';
-          content.style.height = 'auto';
-          
-          // Aumentar la escala para mayor resolución
-          const scale = 2;
-          
-          html2canvas(content, {
-            scale: scale,
-            useCORS: true,
-            logging: false,
-            allowTaint: true,
-            foreignObjectRendering: true
-          }).then(canvas => {
+           const guardarComoJPG = () => {
+          html2canvas(planoRef.current).then((canvas) => {
+            const link = document.createElement("a");
+            link.download = "plano-teatro.jpg";
+            link.href = canvas.toDataURL("image/jpeg");
+            link.click();
+          });
             // Convertir a PNG para mejor calidad
             const imageData = canvas.toDataURL("image/png");
             
@@ -223,10 +213,10 @@
                 Imprimir Plano
               </button>
               <button
-                onClick={guardarComoImagen}
+                onClick={guardarComoJPG}
                 className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
               >
-                Guardar como Imagen
+                Guardar como JPG
               </button>
             </div>
 
