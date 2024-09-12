@@ -3,27 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Teatro Centro Cultural Plaza de San Martín - Plano de Asientos</title>
+    <title>
+      Teatro Centro Cultural Plaza de San Martín - Plano de Asientos
+    </title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <style>
-      @media print {
-        body * {
-          visibility: hidden;
-        }
-        #plano-teatro, #plano-teatro * {
-          visibility: visible;
-        }
-        #plano-teatro {
-          position: absolute;
-          left: 0;
-          top: 0;
-        }
-      }
-    </style>
   </head>
   <body class="bg-gray-100">
     <header class="bg-blue-800 text-white p-4">
@@ -75,15 +62,22 @@
         const seccionesPB = {
           izquierda: {
             filas: 20,
-            asientosPorFila: [5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7],
+            asientosPorFila: [
+              5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            ],
           },
           centro: {
             filas: 19,
-            asientosPorFila: [15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 15, 16, 15, 14, 13, 12],
+            asientosPorFila: [
+              15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 15, 16, 15,
+              14, 13, 12,
+            ],
           },
           derecha: {
             filas: 20,
-            asientosPorFila: [5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7],
+            asientosPorFila: [
+              5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            ],
           },
         };
 
@@ -99,19 +93,33 @@
         };
 
         const toggleAsiento = (planta, seccion, fila, asiento) => {
-          const setAsientos = planta === "PB" ? setAsientosPB : setAsientosPA;
-          setAsientos((prev) => ({
-            ...prev,
-            [`${seccion}-${fila}-${asiento}`]: !prev[`${seccion}-${fila}-${asiento}`],
-          }));
+          if (planta === "PB") {
+            setAsientosPB((prev) => ({
+              ...prev,
+              [`${seccion}-${fila}-${asiento}`]:
+                !prev[`${seccion}-${fila}-${asiento}`],
+            }));
+          } else {
+            setAsientosPA((prev) => ({
+              ...prev,
+              [`${seccion}-${fila}-${asiento}`]:
+                !prev[`${seccion}-${fila}-${asiento}`],
+            }));
+          }
         };
 
         const handleVipNombreChange = (planta, fila, asiento, valor) => {
-          const setVipNombres = planta === "PB" ? setVipNombresPB : setVipNombresPA;
-          setVipNombres((prev) => ({
-            ...prev,
-            [`${fila}-${asiento}`]: valor,
-          }));
+          if (planta === "PB") {
+            setVipNombresPB((prev) => ({
+              ...prev,
+              [`${fila}-${asiento}`]: valor,
+            }));
+          } else {
+            setVipNombresPA((prev) => ({
+              ...prev,
+              [`${fila}-${asiento}`]: valor,
+            }));
+          }
         };
 
         const renderSeccion = (planta, nombre, config) => (
@@ -119,26 +127,54 @@
             <h3 className="text-lg font-semibold mb-2">{nombre}</h3>
             <div className="flex flex-col items-center">
               {Array.from({ length: config.filas }, (_, fila) => (
-                <div key={fila} className="flex justify-center w-full mb-1 items-center">
+                <div
+                  key={fila}
+                  className="flex justify-center w-full mb-1 items-center"
+                >
                   <span className="mr-2 text-sm">{fila + 1}</span>
-                  {Array.from({ length: config.asientosPorFila[fila] }, (_, asiento) => {
-                    const asientoNum = nombre.toLowerCase() === "izquierda"
-                      ? config.asientosPorFila[fila] - asiento
-                      : asiento + 1;
-                    const asientoKey = `${nombre.toLowerCase()}-${fila + 1}-${asientoNum}`;
-                    const isOcupado = planta === "PB" ? asientosPB[asientoKey] : asientosPA[asientoKey];
-                    return (
-                      <button
-                        key={asiento}
-                        onClick={() => toggleAsiento(planta, nombre.toLowerCase(), fila + 1, asientoNum)}
-                        className={`w-6 h-6 text-xs rounded-full mx-0.5 flex items-center justify-center ${
-                          isOcupado ? "bg-red-500 text-white" : "bg-gray-300"
-                        }`}
-                      >
-                        {asientoNum}
-                      </button>
-                    );
-                  })}
+                  {Array.from(
+                    { length: config.asientosPorFila[fila] },
+                    (_, asiento) => {
+                      const asientoNum =
+                        nombre.toLowerCase() === "izquierda"
+                          ? config.asientosPorFila[fila] - asiento
+                          : asiento + 1;
+                      return (
+                        <button
+                          key={asiento}
+                          onClick={() =>
+                            toggleAsiento(
+                              planta,
+                              nombre.toLowerCase(),
+                              fila + 1,
+                              asientoNum
+                            )
+                          }
+                          className={`w-6 h-6 text-xs rounded-full mx-0.5 flex items-center justify-center
+                          ${
+                            planta === "PB"
+                              ? asientosPB[
+                                  `${nombre.toLowerCase()}-${
+                                    fila + 1
+                                  }-${asientoNum}`
+                                ]
+                                ? "bg-red-500 text-white"
+                                : "bg-gray-300"
+                              : asientosPA[
+                                  `${nombre.toLowerCase()}-${
+                                    fila + 1
+                                  }-${asientoNum}`
+                                ]
+                              ? "bg-red-500 text-white"
+                              : "bg-gray-300"
+                          }
+                        `}
+                        >
+                          {asientoNum}
+                        </button>
+                      );
+                    }
+                  )}
                 </div>
               ))}
             </div>
@@ -154,16 +190,36 @@
                   <h4 className="font-semibold mb-2">Fila {fila + 1}</h4>
                   <div className="space-y-2">
                     {Array.from(
-                      { length: planta === "PB" ? seccionesPB.centro.asientosPorFila[fila] : 10 },
+                      {
+                        length:
+                          planta === "PB"
+                            ? seccionesPB.centro.asientosPorFila[fila]
+                            : 10,
+                      },
                       (_, asiento) => (
                         <div key={asiento} className="flex items-center">
-                          <span className="mr-2 font-medium w-6">{asiento + 1}:</span>
+                          <span className="mr-2 font-medium w-6">
+                            {asiento + 1}:
+                          </span>
                           <input
                             type="text"
                             placeholder="Nombre y Apellido"
                             className="flex-grow p-1 text-sm border rounded"
-                            value={(planta === "PB" ? vipNombresPB : vipNombresPA)[`${fila + 1}-${asiento + 1}`] || ""}
-                            onChange={(e) => handleVipNombreChange(planta, fila + 1, asiento + 1, e.target.value)}
+                            value={
+                              planta === "PB"
+                                ? vipNombresPB[`${fila + 1}-${asiento + 1}`] ||
+                                  ""
+                                : vipNombresPA[`${fila + 1}-${asiento + 1}`] ||
+                                  ""
+                            }
+                            onChange={(e) =>
+                              handleVipNombreChange(
+                                planta,
+                                fila + 1,
+                                asiento + 1,
+                                e.target.value
+                              )
+                            }
                           />
                         </div>
                       )
@@ -179,24 +235,12 @@
           window.print();
         };
 
-           const guardarComoJPG = () => {
+        const guardarComoJPG = () => {
           html2canvas(planoRef.current).then((canvas) => {
             const link = document.createElement("a");
             link.download = "plano-teatro.jpg";
             link.href = canvas.toDataURL("image/jpeg");
             link.click();
-          });
-            // Convertir a PNG para mejor calidad
-            const imageData = canvas.toDataURL("image/png");
-            
-            const link = document.createElement("a");
-            link.download = "plano-teatro-alta-calidad.png";
-            link.href = imageData;
-            link.click();
-            
-            // Restaurar estilos originales si es necesario
-            content.style.overflow = '';
-            content.style.height = '';
           });
         };
 
