@@ -11,6 +11,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   </head>
   <body class="bg-gray-100">
     <header class="bg-blue-800 text-white p-4">
@@ -231,15 +232,55 @@
           </div>
         );
 
+        const ajustarA4 = (content) => {
+          const a4Width = 210; // mm
+          const a4Height = 297; // mm
+          const aspectRatio = content.offsetWidth / content.offsetHeight;
+          let width, height;
+
+          if (aspectRatio > a4Width / a4Height) {
+            width = a4Width;
+            height = a4Width / aspectRatio;
+          } else {
+            height = a4Height;
+            width = a4Height * aspectRatio;
+          }
+
+          return { width, height };
+        };
+
         const imprimirPlano = () => {
-          window.print();
+          const content = planoRef.current;
+          const { width, height } = ajustarA4(content);
+
+          html2canvas(content).then(canvas => {
+            const pdf = new jspdf.jsPDF({
+              orientation: width > height ? 'landscape' : 'portrait',
+              unit: 'mm',
+              format: 'a4'
+            });
+
+            pdf.addImage(canvas.toDataURL('image/jpeg'), 'JPEG', 0, 0, width, height);
+            pdf.autoPrint();
+            window.open(pdf.output('bloburl'), '_blank');
+          });
         };
 
         const guardarComoJPG = () => {
-          html2canvas(planoRef.current).then((canvas) => {
+          const content = planoRef.current;
+          const { width, height } = ajustarA4(content);
+
+          html2canvas(content).then(canvas => {
+            const scaleFactor = 2; // Para mejor calidad
+            const scaledCanvas = document.createElement('canvas');
+            scaledCanvas.width = width * scaleFactor;
+            scaledCanvas.height = height * scaleFactor;
+            const ctx = scaledCanvas.getContext('2d');
+            ctx.drawImage(canvas, 0, 0, scaledCanvas.width, scaledCanvas.height);
+
             const link = document.createElement("a");
-            link.download = "plano-teatro.jpg";
-            link.href = canvas.toDataURL("image/jpeg");
+            link.download = "plano-teatro-a4.jpg";
+            link.href = scaledCanvas.toDataURL("image/jpeg");
             link.click();
           });
         };
