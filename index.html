@@ -182,11 +182,15 @@
         const guardarComoImagen = () => {
           const content = planoRef.current;
           
-          // Asegurar que todo el contenido sea visible
+          // Set a fixed width to ensure consistent rendering
+          const originalWidth = content.style.width;
+          content.style.width = '1200px';
+          
+          // Ensure all content is visible
           content.style.overflow = 'visible';
           content.style.height = 'auto';
           
-          // Aumentar la escala para mayor resolución
+          // Increase scale for better resolution
           const scale = 2;
           
           html2canvas(content, {
@@ -194,9 +198,11 @@
             useCORS: true,
             logging: false,
             allowTaint: true,
-            foreignObjectRendering: true
+            foreignObjectRendering: true,
+            windowWidth: 1200,
+            windowHeight: window.innerHeight
           }).then(canvas => {
-            // Convertir a PNG para mejor calidad
+            // Convert to PNG for better quality
             const imageData = canvas.toDataURL("image/png");
             
             const link = document.createElement("a");
@@ -204,7 +210,8 @@
             link.href = imageData;
             link.click();
             
-            // Restaurar estilos originales si es necesario
+            // Restore original styles
+            content.style.width = originalWidth;
             content.style.overflow = '';
             content.style.height = '';
           });
