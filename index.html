@@ -15,25 +15,39 @@
       src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
       crossorigin
     ></script>
-    <!-- Actualización de Babel Standalone -->
-    <script
-      src="https://unpkg.com/@babel/standalone@7/babel.min.js"
-      crossorigin
-    ></script>
     <!-- Actualización de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Actualización de html2canvas -->
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
-      integrity="sha512-..."
+      integrity="sha512-QxYJJfGAAJ5nQ/kv2iK5e6duJxHCcGhwVn2P5TVVhZ6YPY1pBbOKJz4Z1v6g9V0NwqE89LXK52vO4se41YgqFA=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <!-- Estilos adicionales para impresión -->
     <style>
-      /* Configuración de Tailwind CSS */
-      @tailwind base;
-      @tailwind components;
-      @tailwind utilities;
+      @media print {
+        @page {
+          size: A4 landscape;
+          margin: 1cm;
+        }
+        body {
+          margin: 0;
+        }
+        /* Control de saltos de página */
+        .page-break {
+          page-break-before: always;
+        }
+        /* Ajuste de tamaños para impresión */
+        .print-container {
+          width: 100%;
+          height: auto;
+        }
+        /* Ocultar botones en impresión */
+        .no-print {
+          display: none;
+        }
+      }
     </style>
   </head>
   <body class="bg-gray-100">
@@ -232,10 +246,10 @@
         };
 
         const guardarComoJPG = () => {
-          html2canvas(planoRef.current).then((canvas) => {
+          html2canvas(planoRef.current, { scale: 2 }).then((canvas) => {
             const link = document.createElement("a");
             link.download = "plano-teatro.jpg";
-            link.href = canvas.toDataURL("image/jpeg");
+            link.href = canvas.toDataURL("image/jpeg", 0.95);
             link.click();
           });
         };
@@ -243,9 +257,9 @@
         return (
           <div
             ref={planoRef}
-            className="max-w-full mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-4"
+            className="max-w-full mx-auto bg-white shadow-lg rounded-lg overflow-hidden p-4 print-container"
           >
-            <div className="mb-4 flex justify-end space-x-4">
+            <div className="mb-4 flex justify-end space-x-4 no-print">
               <button
                 onClick={imprimirPlano}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -286,6 +300,9 @@
               {renderVipSection("PB")}
             </div>
 
+            {/* Salto de página para impresión */}
+            <div className="page-break"></div>
+
             <h2 className="text-2xl font-bold text-center my-8">
               PLANTA ALTA
             </h2>
@@ -319,4 +336,3 @@
     </script>
   </body>
 </html>
-
