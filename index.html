@@ -6,13 +6,38 @@
     <title>
       Teatro Centro Cultural Plaza de San Martín - Plano de Asientos
     </title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/17.0.2/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/17.0.2/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.26.0/babel.min.js"></script>
+    <!-- Actualización de las versiones de React y ReactDOM -->
+    <script
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+      crossorigin
+    ></script>
+    <!-- Actualización de Babel Standalone -->
+    <script
+      src="https://unpkg.com/@babel/standalone@7/babel.min.js"
+      crossorigin
+    ></script>
+    <!-- Actualización de Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Actualización de html2canvas -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"
+      integrity="sha512-..."
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <style>
+      /* Configuración de Tailwind CSS */
+      @tailwind base;
+      @tailwind components;
+      @tailwind utilities;
+    </style>
   </head>
   <body class="bg-gray-100">
+    <!-- Contenido de la página -->
     <header class="bg-blue-800 text-white p-4">
       <h1 class="text-3xl font-bold text-center">
         Teatro Centro Cultural Plaza de San Martín
@@ -51,130 +76,110 @@
       </p>
     </footer>
 
+    <!-- Código JavaScript mejorado -->
     <script type="text/babel">
+      const { useState, useRef } = React;
+
       const Teatro = () => {
-        const [asientosPB, setAsientosPB] = React.useState({});
-        const [asientosPA, setAsientosPA] = React.useState({});
-        const [vipNombresPB, setVipNombresPB] = React.useState({});
-        const [vipNombresPA, setVipNombresPA] = React.useState({});
-        const planoRef = React.useRef(null);
+        const [asientos, setAsientos] = useState({ PB: {}, PA: {} });
+        const [vipNombres, setVipNombres] = useState({ PB: {}, PA: {} });
+        const planoRef = useRef(null);
 
-        const seccionesPB = {
-          izquierda: {
-            filas: 20,
-            asientosPorFila: [
-              5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-            ],
+        const secciones = {
+          PB: {
+            izquierda: {
+              filas: 20,
+              asientosPorFila: [
+                5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+              ],
+            },
+            centro: {
+              filas: 19,
+              asientosPorFila: [
+                15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 15, 16, 15,
+                14, 13, 12,
+              ],
+            },
+            derecha: {
+              filas: 20,
+              asientosPorFila: [
+                5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+              ],
+            },
           },
-          centro: {
-            filas: 19,
-            asientosPorFila: [
-              15, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 15, 16, 15,
-              14, 13, 12,
-            ],
-          },
-          derecha: {
-            filas: 20,
-            asientosPorFila: [
-              5, 5, 5, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-            ],
-          },
-        };
-
-        const seccionesPA = {
-          izquierda: {
-            filas: 12,
-            asientosPorFila: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 5],
-          },
-          derecha: {
-            filas: 12,
-            asientosPorFila: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 5],
+          PA: {
+            izquierda: {
+              filas: 12,
+              asientosPorFila: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 5],
+            },
+            derecha: {
+              filas: 12,
+              asientosPorFila: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 5],
+            },
           },
         };
 
         const toggleAsiento = (planta, seccion, fila, asiento) => {
-          if (planta === "PB") {
-            setAsientosPB((prev) => ({
-              ...prev,
-              [`${seccion}-${fila}-${asiento}`]:
-                !prev[`${seccion}-${fila}-${asiento}`],
-            }));
-          } else {
-            setAsientosPA((prev) => ({
-              ...prev,
-              [`${seccion}-${fila}-${asiento}`]:
-                !prev[`${seccion}-${fila}-${asiento}`],
-            }));
-          }
+          setAsientos((prev) => {
+            const newAsientos = { ...prev };
+            const key = `${seccion}-${fila}-${asiento}`;
+            newAsientos[planta][key] = !newAsientos[planta][key];
+            return newAsientos;
+          });
         };
 
         const handleVipNombreChange = (planta, fila, asiento, valor) => {
-          if (planta === "PB") {
-            setVipNombresPB((prev) => ({
-              ...prev,
-              [`${fila}-${asiento}`]: valor,
-            }));
-          } else {
-            setVipNombresPA((prev) => ({
-              ...prev,
-              [`${fila}-${asiento}`]: valor,
-            }));
-          }
+          setVipNombres((prev) => {
+            const newVipNombres = { ...prev };
+            const key = `${fila}-${asiento}`;
+            newVipNombres[planta][key] = valor;
+            return newVipNombres;
+          });
         };
 
         const renderSeccion = (planta, nombre, config) => (
-          <div className="mx-2">
+          <div className="mx-2" key={`${planta}-${nombre}`}>
             <h3 className="text-lg font-semibold mb-2">{nombre}</h3>
             <div className="flex flex-col items-center">
-              {Array.from({ length: config.filas }, (_, fila) => (
+              {config.asientosPorFila.map((numAsientos, filaIdx) => (
                 <div
-                  key={fila}
+                  key={filaIdx}
                   className="flex justify-center w-full mb-1 items-center"
                 >
-                  <span className="mr-2 text-sm">{fila + 1}</span>
-                  {Array.from(
-                    { length: config.asientosPorFila[fila] },
-                    (_, asiento) => {
-                      const asientoNum =
-                        nombre.toLowerCase() === "izquierda"
-                          ? config.asientosPorFila[fila] - asiento
-                          : asiento + 1;
-                      return (
-                        <button
-                          key={asiento}
-                          onClick={() =>
-                            toggleAsiento(
-                              planta,
-                              nombre.toLowerCase(),
-                              fila + 1,
-                              asientoNum
-                            )
-                          }
-                          className={`w-6 h-6 text-xs rounded-full mx-0.5 flex items-center justify-center
-                          ${
-                            planta === "PB"
-                              ? asientosPB[
-                                  `${nombre.toLowerCase()}-${
-                                    fila + 1
-                                  }-${asientoNum}`
-                                ]
-                                ? "bg-red-500 text-white"
-                                : "bg-gray-300"
-                              : asientosPA[
-                                  `${nombre.toLowerCase()}-${
-                                    fila + 1
-                                  }-${asientoNum}`
-                                ]
-                              ? "bg-red-500 text-white"
-                              : "bg-gray-300"
-                          }
-                        `}
-                        >
-                          {asientoNum}
-                        </button>
-                      );
-                    }
-                  )}
+                  <span className="mr-2 text-sm">{filaIdx + 1}</span>
+                  {Array.from({ length: numAsientos }, (_, asientoIdx) => {
+                    const asientoNum =
+                      nombre.toLowerCase() === "izquierda"
+                        ? numAsientos - asientoIdx
+                        : asientoIdx + 1;
+                    const key = `${nombre.toLowerCase()}-${
+                      filaIdx + 1
+                    }-${asientoNum}`;
+                    const isSelected = asientos[planta][key];
+                    return (
+                      <button
+                        key={asientoIdx}
+                        onClick={() =>
+                          toggleAsiento(
+                            planta,
+                            nombre.toLowerCase(),
+                            filaIdx + 1,
+                            asientoNum
+                          )
+                        }
+                        className={`w-6 h-6 text-xs rounded-full mx-0.5 flex items-center justify-center ${
+                          isSelected
+                            ? "bg-red-500 text-white"
+                            : "bg-gray-300"
+                        }`}
+                        aria-label={`Asiento ${asientoNum}, Fila ${
+                          filaIdx + 1
+                        }, Sección ${nombre}`}
+                      >
+                        {asientoNum}
+                      </button>
+                    );
+                  })}
                 </div>
               ))}
             </div>
@@ -182,48 +187,39 @@
         );
 
         const renderVipSection = (planta) => (
-          <div className="ml-4 border-l pl-4">
+          <div className="ml-4 border-l pl-4" key={`vip-${planta}`}>
             <h3 className="text-lg font-semibold mb-2">Asientos VIP</h3>
             <div className="flex space-x-4">
-              {Array.from({ length: 2 }, (_, fila) => (
-                <div key={fila} className="flex-1">
-                  <h4 className="font-semibold mb-2">Fila {fila + 1}</h4>
+              {Array.from({ length: 2 }, (_, filaIdx) => (
+                <div key={filaIdx} className="flex-1">
+                  <h4 className="font-semibold mb-2">
+                    Fila {filaIdx + 1}
+                  </h4>
                   <div className="space-y-2">
-                    {Array.from(
-                      {
-                        length:
-                          planta === "PB"
-                            ? seccionesPB.centro.asientosPorFila[fila]
-                            : 10,
-                      },
-                      (_, asiento) => (
-                        <div key={asiento} className="flex items-center">
+                    {Array.from({ length: 10 }, (_, asientoIdx) => {
+                      const key = `${filaIdx + 1}-${asientoIdx + 1}`;
+                      return (
+                        <div key={asientoIdx} className="flex items-center">
                           <span className="mr-2 font-medium w-6">
-                            {asiento + 1}:
+                            {asientoIdx + 1}:
                           </span>
                           <input
                             type="text"
                             placeholder="Nombre y Apellido"
                             className="flex-grow p-1 text-sm border rounded"
-                            value={
-                              planta === "PB"
-                                ? vipNombresPB[`${fila + 1}-${asiento + 1}`] ||
-                                  ""
-                                : vipNombresPA[`${fila + 1}-${asiento + 1}`] ||
-                                  ""
-                            }
+                            value={vipNombres[planta][key] || ""}
                             onChange={(e) =>
                               handleVipNombreChange(
                                 planta,
-                                fila + 1,
-                                asiento + 1,
+                                filaIdx + 1,
+                                asientoIdx + 1,
                                 e.target.value
                               )
                             }
                           />
                         </div>
-                      )
-                    )}
+                      );
+                    })}
                   </div>
                 </div>
               ))}
@@ -264,27 +260,49 @@
               </button>
             </div>
 
-            <h2 className="text-2xl font-bold text-center my-4">PLANTA BAJA</h2>
+            <h2 className="text-2xl font-bold text-center my-4">
+              PLANTA BAJA
+            </h2>
             <div className="w-full h-8 bg-gray-800 mb-4"></div>
             <div className="flex flex-col lg:flex-row">
               <div className="flex-grow mb-4 lg:mb-0">
                 <div className="flex flex-col md:flex-row justify-between">
-                  {renderSeccion("PB", "Izquierda", seccionesPB.izquierda)}
-                  {renderSeccion("PB", "Centro", seccionesPB.centro)}
-                  {renderSeccion("PB", "Derecha", seccionesPB.derecha)}
+                  {renderSeccion(
+                    "PB",
+                    "Izquierda",
+                    secciones.PB.izquierda
+                  )}
+                  {renderSeccion("PB", "Centro", secciones.PB.centro)}
+                  {renderSeccion(
+                    "PB",
+                    "Derecha",
+                    secciones.PB.derecha
+                  )}
                 </div>
-                <div className="mt-4 text-center">Cabina de Luces y Sonido</div>
+                <div className="mt-4 text-center">
+                  Cabina de Luces y Sonido
+                </div>
               </div>
               {renderVipSection("PB")}
             </div>
 
-            <h2 className="text-2xl font-bold text-center my-8">PLANTA ALTA</h2>
+            <h2 className="text-2xl font-bold text-center my-8">
+              PLANTA ALTA
+            </h2>
             <div className="w-full h-8 bg-gray-800 mb-4"></div>
             <div className="flex flex-col lg:flex-row justify-center">
               <div className="flex-grow mb-4 lg:mb-0">
                 <div className="flex flex-col md:flex-row justify-center space-x-8">
-                  {renderSeccion("PA", "Izquierda", seccionesPA.izquierda)}
-                  {renderSeccion("PA", "Derecha", seccionesPA.derecha)}
+                  {renderSeccion(
+                    "PA",
+                    "Izquierda",
+                    secciones.PA.izquierda
+                  )}
+                  {renderSeccion(
+                    "PA",
+                    "Derecha",
+                    secciones.PA.derecha
+                  )}
                 </div>
               </div>
               {renderVipSection("PA")}
@@ -293,7 +311,12 @@
         );
       };
 
-      ReactDOM.render(<Teatro />, document.getElementById("plano-teatro"));
+      // Actualización para React 18
+      const root = ReactDOM.createRoot(
+        document.getElementById("plano-teatro")
+      );
+      root.render(<Teatro />);
     </script>
   </body>
 </html>
+
